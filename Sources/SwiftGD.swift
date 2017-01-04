@@ -50,14 +50,13 @@ public class Image {
 	}
     
     public init?(bytes: inout [UInt8]) {
-        let ptr = UnsafeMutableRawPointer(&bytes)
         let size = bytes.count
-        
+    
         var loadedImage:gdImagePtr?
         if Image.isHeaderPng(bytes: &bytes) {
-            loadedImage = gdImageCreateFromPngPtr(Int32(size), ptr)
+            loadedImage = gdImageCreateFromPngPtr(Int32(size), &bytes)
         } else {
-            loadedImage = gdImageCreateFromJpegPtr(Int32(size), ptr)
+            loadedImage = gdImageCreateFromJpegPtr(Int32(size), &bytes)
         }
         
         if let image = loadedImage {
@@ -73,7 +72,7 @@ public class Image {
     }
 
     private static func isHeaderPng(bytes: inout [UInt8]) -> Bool {
-        print("header: \(bytes[0]) \(bytes[1]) \(bytes[2]) \(bytes[4]) \(bytes[5]) \(bytes[6]) \(bytes[7])")
+//        print("header: \(bytes[0]) \(bytes[1]) \(bytes[2]) \(bytes[4]) \(bytes[5]) \(bytes[6]) \(bytes[7])")
         let pngHeader:[UInt8] = [137, 80, 78, 71, 13, 10, 26, 10]
         if bytes.count < pngHeader.count {
             return false

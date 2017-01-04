@@ -55,7 +55,7 @@ class SwiftGDTests: XCTestCase {
             XCTFail("can't save test image")
             return
         }
-        print("using \(imageURL.path) as test image")
+//        print("using \(imageURL.path) as test image")
         
         //when
         let sut = Image(url: imageURL)
@@ -74,7 +74,7 @@ class SwiftGDTests: XCTestCase {
             XCTFail("can't save test image")
             return
         }
-        print("using \(imageURL.path) as test image")
+//        print("using \(imageURL.path) as test image")
         
         //when
         let sut = Image(url: imageURL)
@@ -93,7 +93,7 @@ class SwiftGDTests: XCTestCase {
             XCTFail("can't save test image")
             return
         }
-        print("using \(imageURL.path) as test image")
+//        print("using \(imageURL.path) as test image")
         
         //when
         let sut = Image(url: imageURL)
@@ -177,13 +177,33 @@ class SwiftGDTests: XCTestCase {
         XCTAssertEqual(size?.width, 5)
         XCTAssertEqual(size?.height, 5)
     }
+    
+    func testTryCreatingImageFromHTMLFile() {
+        //given
+        guard let data = "<html></html>".data(using: .utf8) else {
+            XCTFail("can't generate test image")
+            return
+        }
+        var bytes:[UInt8] = [UInt8](data)
+        
+        //when
+        let sut = Image(bytes:&bytes)
+        
+        //then
+        XCTAssertNil(sut)
+    }
 
     static var allTests : [(String, (SwiftGDTests) -> () throws -> Void)] {
         return [
             ("testCreateEmptyImage", testCreateEmptyImage),
             ("testReadingPNGFromFile", testReadingPNGFromFile),
             ("testReadingJPGFromFile", testReadingJPGFromFile),
-            ("testFailToReadPNGfromJPGFile", testFailToReadPNGfromJPGFile)
+            ("testFailToReadPNGfromJPGFile", testFailToReadPNGfromJPGFile),
+            ("testCreateImageFromJPGData", testCreateImageFromJPGData),
+            ("testCreateImageFromPNGData", testCreateImageFromPNGData),
+            ("testCreateImageFromJPGBytes", testCreateImageFromJPGBytes),
+            ("testCreateImageFromPNGBytes", testCreateImageFromPNGBytes),
+            ("testTryCreatingImageFromHTMLFile", testTryCreatingImageFromHTMLFile)
         ]
     }
 }
