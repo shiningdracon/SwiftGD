@@ -1,7 +1,38 @@
 import XCTest
 @testable import SwiftGD
+import Foundation
+
+struct TestHelper {
+    static let pngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFAQAAAAClFBtIAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAd2KE6QAAAALSURBVAjXY2CAAQAACgAB5/ja+gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxNy0wMS0wNFQxNjo1NTozOSswMTowMBVM0agAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTctMDEtMDRUMTY6NTU6MzkrMDE6MDBkEWkUAAAAAElFTkSuQmCC"
+    
+    static let jpgBase64 = "/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAAqACAAQAAAABAAAABaADAAQAAAABAAAABQAAAAD/7QA4UGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/+IBiElDQ19QUk9GSUxFAAEBAAABeGFwcGwCEAAAbW50ckdSQVlYWVogB9UABwABAAAAAAAAYWNzcEFQUEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPbWAAEAAAAA0y1hcHBsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEZGVzYwAAALQAAAB1Y3BydAAAASwAAAAnd3RwdAAAAVQAAAAUa1RSQwAAAWgAAAAOZGVzYwAAAAAAAAAbQ2FsaWJyYXRlZCBHcmF5IENvbG9yc3BhY2UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdGV4dAAAAABDb3B5cmlnaHQgQXBwbGUgQ29tcHV0ZXIsIEluYy4AAFhZWiAAAAAAAADzUQABAAAAARbMY3VydgAAAAAAAAABAjMAAP/AAAsIAAUABQEBEQD/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/2wBDAAICAgICAgMCAgMEAwMDBAUEBAQEBQcFBQUFBQcIBwcHBwcHCAgICAgICAgKCgoKCgoLCwsLCw0NDQ0NDQ0NDQ3/3QAEAAH/2gAIAQEAAD8A/n/r/9k="
+    
+    static func writePNG() -> URL? {
+        return writeImage(base64: pngBase64, name: "image.png")
+    }
+    
+    static func writeJPG() -> URL? {
+        return writeImage(base64: jpgBase64, name: "image.jpg")
+    }
+    
+    static func writeImage(base64:String, name:String) -> URL? {
+        let data = Data(base64Encoded: base64)
+        var url = URL(fileURLWithPath: NSTemporaryDirectory())
+        url.appendPathComponent(name)
+        do {
+            try data?.write(to: url)
+        } catch let error {
+            print("\(error)")
+            return nil
+        }
+        return url
+    }
+    
+}
 
 class SwiftGDTests: XCTestCase {
+    
+    
     func testCreateEmptyImage() {
         //given
         let width = 500
@@ -11,17 +42,58 @@ class SwiftGDTests: XCTestCase {
         let sut = Image(width: width, height: height)
     
         //then
-        let size = sut?.size
-        
         XCTAssertNotNil(sut)
+        
+        let size = sut?.size
         XCTAssertEqual(size?.width, width)
         XCTAssertEqual(size?.height, height)
     }
+    
+    func testReadingPNGFromFile() {
+        //given
+        guard let imageURL = TestHelper.writePNG() else {
+            XCTFail("can't save test image")
+            return
+        }
+        print("using \(imageURL.path) as test image")
+        
+        //when
+        let sut = Image(url: imageURL)
+        
+        //then
+        XCTAssertNotNil(sut)
+        
+        let size = sut?.size
+        XCTAssertEqual(size?.width, 5)
+        XCTAssertEqual(size?.height, 5)
+    }
+    
+    func testReadingJPGFromFile() {
+        //given
+        guard let imageURL = TestHelper.writeJPG() else {
+            XCTFail("can't save test image")
+            return
+        }
+        print("using \(imageURL.path) as test image")
+        
+        //when
+        let sut = Image(url: imageURL)
+        
+        //then
+        XCTAssertNotNil(sut)
+        
+        let size = sut?.size
+        XCTAssertEqual(size?.width, 5)
+        XCTAssertEqual(size?.height, 5)
+    }
+
 
 
     static var allTests : [(String, (SwiftGDTests) -> () throws -> Void)] {
         return [
             ("testCreateEmptyImage", testCreateEmptyImage),
+            ("testReadingPNGFromFile", testReadingPNGFromFile),
+            ("testReadingJPGFromFile", testReadingJPGFromFile),
         ]
     }
 }
