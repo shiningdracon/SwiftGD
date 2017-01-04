@@ -48,7 +48,47 @@ public class Image {
 			return nil
 		}
 	}
+    
+    public init?(bytes: inout [UInt8]) {
+        let ptr = UnsafeMutableRawPointer(&bytes)
+        let size = bytes.count
+        
+        var loadedImage:gdImagePtr?
+        if Image.isHeaderPng(bytes: &bytes) {
+            loadedImage = gdImageCreateFromPngPtr(Int32(size), ptr)
+        } else {
+            loadedImage = gdImageCreateFromJpegPtr(Int32(size), ptr)
+        }
+        
+        if let image = loadedImage {
+            internalImage = image
+        } else {
+            return nil
+        }
+    }
+    
+    public convenience init?(data: inout Data) {
+        var bytes:[UInt8] = [UInt8](data)
+        self.init(bytes:&bytes)
+    }
 
+    private static func isHeaderPng(bytes: inout [UInt8]) -> Bool {
+        print("header: \(bytes[0]) \(bytes[1]) \(bytes[2]) \(bytes[4]) \(bytes[5]) \(bytes[6]) \(bytes[7])")
+        let pngHeader:[UInt8] = [137, 80, 78, 71, 13, 10, 26, 10]
+        if bytes.count < pngHeader.count {
+            return false
+        }
+        for x in 0 ..< pngHeader.count {
+            let byte = bytes[x]
+            let header = pngHeader[x]
+            if byte != header {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
 	private init(gdImage: gdImagePtr) {
 		self.internalImage = gdImage
 	}

@@ -86,14 +86,104 @@ class SwiftGDTests: XCTestCase {
         XCTAssertEqual(size?.width, 5)
         XCTAssertEqual(size?.height, 5)
     }
+    
+    func testFailToReadPNGfromJPGFile() {
+        //given
+        guard let imageURL = TestHelper.writeImage(base64:TestHelper.jpgBase64, name:"bad.png") else {
+            XCTFail("can't save test image")
+            return
+        }
+        print("using \(imageURL.path) as test image")
+        
+        //when
+        let sut = Image(url: imageURL)
+        
+        //then
+        XCTAssertNil(sut)
+    }
 
+    
+    func testCreateImageFromJPGData() {
+        //given
+        guard var data = Data(base64Encoded: TestHelper.jpgBase64) else {
+            XCTFail("can't generate test image")
+            return
+        }
+        
+        //when
+        let sut = Image(data:&data)
+        
+        //then
+        XCTAssertNotNil(sut)
+        
+        let size = sut?.size
+        XCTAssertEqual(size?.width, 5)
+        XCTAssertEqual(size?.height, 5)
+        
+    }
 
+    func testCreateImageFromPNGData() {
+        //given
+        guard var data = Data(base64Encoded: TestHelper.pngBase64) else {
+            XCTFail("can't generate test image")
+            return
+        }
+        
+        //when
+        let sut = Image(data:&data)
+        
+        //then
+        XCTAssertNotNil(sut)
+        
+        let size = sut?.size
+        XCTAssertEqual(size?.width, 5)
+        XCTAssertEqual(size?.height, 5)
+    }
+
+    func testCreateImageFromJPGBytes() {
+        //given
+        guard let data = Data(base64Encoded: TestHelper.jpgBase64) else {
+            XCTFail("can't generate test image")
+            return
+        }
+        var bytes:[UInt8] = [UInt8](data)
+        
+        //when
+        let sut = Image(bytes:&bytes)
+        
+        //then
+        XCTAssertNotNil(sut)
+        
+        let size = sut?.size
+        XCTAssertEqual(size?.width, 5)
+        XCTAssertEqual(size?.height, 5)
+    }
+    
+    func testCreateImageFromPNGBytes() {
+        //given
+        guard let data = Data(base64Encoded: TestHelper.pngBase64) else {
+            XCTFail("can't generate test image")
+            return
+        }
+        var bytes:[UInt8] = [UInt8](data)
+        
+        //when
+        let sut = Image(bytes:&bytes)
+        
+        //then
+        XCTAssertNotNil(sut)
+        
+        let size = sut?.size
+        XCTAssertEqual(size?.width, 5)
+        XCTAssertEqual(size?.height, 5)
+    }
 
     static var allTests : [(String, (SwiftGDTests) -> () throws -> Void)] {
         return [
             ("testCreateEmptyImage", testCreateEmptyImage),
             ("testReadingPNGFromFile", testReadingPNGFromFile),
             ("testReadingJPGFromFile", testReadingJPGFromFile),
+            ("testFailToReadPNGfromJPGFile", testFailToReadPNGfromJPGFile)
         ]
     }
 }
