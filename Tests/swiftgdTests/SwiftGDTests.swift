@@ -192,6 +192,40 @@ class SwiftGDTests: XCTestCase {
         //then
         XCTAssertNil(sut)
     }
+    
+    func testMorph() throws {
+        //given
+        let a = 1000
+        let sut = Image(width:a, height:a)!
+        
+        //when
+        sut.morph{ x, y, color in
+            return Color(red: Double(y)/Double(a), green:Double(y)/Double(a), blue: Double(x)/Double(a), alpha: 1)
+        }
+        
+        var url = URL(fileURLWithPath: NSTemporaryDirectory())
+        url.appendPathComponent("morph.jpg")
+        
+        let fm = FileManager()
+        
+        if fm.fileExists(atPath: url.path) {
+            try fm.removeItem(at: url)
+        }
+        
+        guard sut.write(to: url) else {
+            XCTFail("can't save image")
+            return
+        }
+        
+        print("image saved to \(url.path)")
+        
+        //then
+        XCTAssertNotNil(sut)
+        
+        let size = sut.size
+        XCTAssertEqual(size.width, a)
+        XCTAssertEqual(size.height, a)
+    }
 
     static var allTests : [(String, (SwiftGDTests) -> () throws -> Void)] {
         return [
@@ -203,7 +237,8 @@ class SwiftGDTests: XCTestCase {
             ("testCreateImageFromPNGData", testCreateImageFromPNGData),
             ("testCreateImageFromJPGBytes", testCreateImageFromJPGBytes),
             ("testCreateImageFromPNGBytes", testCreateImageFromPNGBytes),
-            ("testTryCreatingImageFromHTMLFile", testTryCreatingImageFromHTMLFile)
+            ("testTryCreatingImageFromHTMLFile", testTryCreatingImageFromHTMLFile),
+            ("testMorph", testMorph)
         ]
     }
 }

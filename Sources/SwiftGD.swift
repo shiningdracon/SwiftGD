@@ -255,6 +255,29 @@ public class Image {
 	public func desaturate() {
 		gdImageGrayScale(internalImage)
 	}
+    
+    public func morph(_ mod: (Int, Int, Color) -> Color ) {
+        let s = size
+        for x in 0..<s.width {
+            for y in 0..<s.height {
+
+                let colorRaw = gdImageGetTrueColorPixel(internalImage, Int32(x), Int32(y))
+                
+                let a = Double((colorRaw >> 24) & 0xFF)
+                let r = Double((colorRaw >> 16) & 0xFF)
+                let g = Double((colorRaw >> 8) & 0xFF)
+                let b = Double(colorRaw & 0xFF)
+                
+                let color = Color(red: r / 255, green: g / 255, blue: b / 255, alpha: 1 - (a / 127))
+                let modColor = mod(x, y, color)
+                
+                let internalColor = gdImageColorAllocateAlpha(internalImage, Int32(modColor.redComponent * 255.0), Int32(modColor.greenComponent * 255.0), Int32(modColor.blueComponent * 255.0), 127 - Int32(modColor.alphaComponent * 127.0))
+                defer { gdImageColorDeallocate(internalImage, internalColor) }
+                gdImageSetPixel(internalImage, Int32(x), Int32(y), internalColor)
+                
+            }
+        }
+    }
 
 	deinit {
 		// always destroy our internal image resource
