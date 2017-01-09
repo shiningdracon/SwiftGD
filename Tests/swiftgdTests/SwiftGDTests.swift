@@ -226,6 +226,23 @@ class SwiftGDTests: XCTestCase {
         XCTAssertEqual(size.width, a)
         XCTAssertEqual(size.height, a)
     }
+    
+    func testColorFromRGB() {
+        //given
+        let rgb = "#00ff66"
+        
+        //when
+        guard let color = Color(rgb:rgb) else {
+            XCTFail("can't create color")
+            return
+        }
+        
+        //then
+        XCTAssertNotNil(color)
+        XCTAssertEqual(color.redComponent, 0)
+        XCTAssertEqual(color.greenComponent, 1)
+        XCTAssertEqual(color.blueComponent, 0.4)
+    }
 
     static var allTests : [(String, (SwiftGDTests) -> () throws -> Void)] {
         return [
@@ -238,6 +255,7 @@ class SwiftGDTests: XCTestCase {
             ("testCreateImageFromJPGBytes", testCreateImageFromJPGBytes),
             ("testCreateImageFromPNGBytes", testCreateImageFromPNGBytes),
             ("testTryCreatingImageFromHTMLFile", testTryCreatingImageFromHTMLFile),
+            ("testColorFromRGB", testColorFromRGB),
             ("testMorph", testMorph)
         ]
     }

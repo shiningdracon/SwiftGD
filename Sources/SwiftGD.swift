@@ -326,6 +326,19 @@ public class Color {
 		blueComponent = blue
 		alphaComponent = alpha
 	}
+    
+    public init?(rgb:String) {
+        let index = rgb.index(rgb.startIndex, offsetBy: 1)
+        guard let colorRaw = Int(rgb.substring(from: index), radix:16) else {
+            return nil
+        }
+        
+        redComponent = Double((colorRaw >> 16) & 0xFF) / 255
+        greenComponent = Double((colorRaw >> 8) & 0xFF) / 255
+        blueComponent = Double(colorRaw & 0xFF) / 255
+        alphaComponent = 1.0
+
+    }
 
 	public static let red = Color(red: 1, green: 0, blue: 0, alpha: 1)
 	public static let green = Color(red: 0, green: 1, blue: 0, alpha: 1)
