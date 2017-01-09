@@ -258,9 +258,11 @@ public class Image {
     
     public func morph(_ mod: (Int, Int, Color) -> Color ) {
         let s = size
+        let color = Color(red: 0, green: 0, blue: 0, alpha: 0)
+        
         for x in 0..<s.width {
             for y in 0..<s.height {
-
+                
                 let colorRaw = gdImageGetTrueColorPixel(internalImage, Int32(x), Int32(y))
                 
                 let a = Double((colorRaw >> 24) & 0xFF)
@@ -268,17 +270,23 @@ public class Image {
                 let g = Double((colorRaw >> 8) & 0xFF)
                 let b = Double(colorRaw & 0xFF)
                 
-                let color = Color(red: r / 255, green: g / 255, blue: b / 255, alpha: 1 - (a / 127))
+                color.alphaComponent = 1 - (a / 127)
+                color.redComponent = r / 255
+                color.greenComponent = g / 255
+                color.blueComponent = b / 255
+                
                 let modColor = mod(x, y, color)
                 
                 let internalColor = gdImageColorAllocateAlpha(internalImage, Int32(modColor.redComponent * 255.0), Int32(modColor.greenComponent * 255.0), Int32(modColor.blueComponent * 255.0), 127 - Int32(modColor.alphaComponent * 127.0))
-                defer { gdImageColorDeallocate(internalImage, internalColor) }
+                
                 gdImageSetPixel(internalImage, Int32(x), Int32(y), internalColor)
+                
+                gdImageColorDeallocate(internalImage, internalColor)
                 
             }
         }
     }
-
+    
 	deinit {
 		// always destroy our internal image resource
 		gdImageDestroy(internalImage)
