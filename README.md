@@ -20,7 +20,7 @@ SwiftGD manages GD resources for you, so the underlying memory is released when 
 
 ## Installation
 
-Install the GD library on your computer. If you're using macOS, install [Homebrew](http://brew.sh/) then run the command `brew install gd`. If you're using Linux, run `apt-get libgd-dev` as root.
+Install the GD library on your computer. If you're using macOS, install [Homebrew](http://brew.sh/) then run the command `brew install gd`. If you're using Linux, run `sudo apt-get install libgd-dev`.
 
 Now add the following dependency to your Package.swift file:
 
