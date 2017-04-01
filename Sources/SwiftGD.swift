@@ -39,7 +39,17 @@ public class Image {
 		} else if url.lastPathComponent.hasSuffix("png") {
 			loadedImage = gdImageCreateFromPng(inputFile)
 		} else {
-			return nil
+            var buffer = [UInt8](repeating: 0, count: 8)
+            if fread(UnsafeMutablePointer(mutating: buffer), 8, 1, inputFile) == 1 {
+                rewind(inputFile)
+                if Image.isHeaderPng(bytes: &buffer) {
+                    loadedImage = gdImageCreateFromPng(inputFile)
+                } else {
+                    loadedImage = gdImageCreateFromJpeg(inputFile)
+                }
+            } else {
+                return nil
+            }
 		}
 
 		if let image = loadedImage {

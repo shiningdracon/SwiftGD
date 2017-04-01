@@ -86,6 +86,42 @@ class SwiftGDTests: XCTestCase {
         XCTAssertEqual(size?.width, 5)
         XCTAssertEqual(size?.height, 5)
     }
+
+    func testReadingPNGFromFileWithoutExt() {
+        //given
+        guard let imageURL = TestHelper.writeImage(base64: TestHelper.pngBase64, name: "img") else {
+            XCTFail("can't save test image")
+            return
+        }
+
+        //when
+        let sut = Image(url: imageURL)
+
+        //then
+        XCTAssertNotNil(sut)
+
+        let size = sut?.size
+        XCTAssertEqual(size?.width, 5)
+        XCTAssertEqual(size?.height, 5)
+    }
+
+    func testReadingJPGFromFileWithoutExt() {
+        //given
+        guard let imageURL = TestHelper.writeImage(base64: TestHelper.jpgBase64, name: "img") else {
+            XCTFail("can't save test image")
+            return
+        }
+
+        //when
+        let sut = Image(url: imageURL)
+
+        //then
+        XCTAssertNotNil(sut)
+
+        let size = sut?.size
+        XCTAssertEqual(size?.width, 5)
+        XCTAssertEqual(size?.height, 5)
+    }
     
     func testFailToReadPNGfromJPGFile() {
         //given
@@ -249,6 +285,8 @@ class SwiftGDTests: XCTestCase {
             ("testCreateEmptyImage", testCreateEmptyImage),
             ("testReadingPNGFromFile", testReadingPNGFromFile),
             ("testReadingJPGFromFile", testReadingJPGFromFile),
+            ("testReadingPNGFromFileWithoutExt", testReadingPNGFromFileWithoutExt),
+            ("testReadingJPGFromFileWithoutExt", testReadingJPGFromFileWithoutExt),
             ("testFailToReadPNGfromJPGFile", testFailToReadPNGfromJPGFile),
             ("testCreateImageFromJPGData", testCreateImageFromJPGData),
             ("testCreateImageFromPNGData", testCreateImageFromPNGData),
