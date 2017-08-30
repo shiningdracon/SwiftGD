@@ -135,6 +135,28 @@ public class Image {
 		return fm.fileExists(atPath: url.path)
 	}
 
+    public func writeToJpegData(quality: Int = 100) -> (Data?, Int32) {
+
+        var size: Int32 = 0
+        guard let bytesPtr = gdImageJpegPtr(internalImage, &size, Int32(quality)) else {
+            return (nil, -1)
+        }
+        let data = Data(bytes: bytesPtr, count: Int(size))
+
+        return (data, size)
+    }
+
+    public func writeToPngData() -> (Data?, Int32) {
+
+        var size: Int32 = 0
+        guard let bytesPtr = gdImagePngPtr(internalImage, &size) else {
+            return (nil, -1)
+        }
+        let data = Data(bytes: bytesPtr, count: Int(size))
+
+        return (data, size)
+    }
+
 	public func resizedTo(width: Int, height: Int, applySmoothing: Bool = true) -> Image? {
 		if applySmoothing {
 			gdImageSetInterpolationMethod(internalImage, GD_BILINEAR_FIXED)

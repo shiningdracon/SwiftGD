@@ -280,6 +280,27 @@ class SwiftGDTests: XCTestCase {
         XCTAssertEqual(color.blueComponent, 0.4)
     }
 
+    func testWriteToMemory() {
+        let width = 500
+        let height = 500
+
+        guard let image = Image(width: width, height: height) else {
+            XCTFail("can't create image")
+            return
+        }
+
+        var data: Data?
+        var size: Int32
+
+        (data, size) = image.writeToJpegData()
+        XCTAssertNotNil(data)
+        XCTAssertEqual(data!.count, Int(size))
+
+        (data, size) = image.writeToPngData()
+        XCTAssertNotNil(data)
+        XCTAssertEqual(data!.count, Int(size))
+    }
+
     static var allTests : [(String, (SwiftGDTests) -> () throws -> Void)] {
         return [
             ("testCreateEmptyImage", testCreateEmptyImage),
@@ -294,7 +315,8 @@ class SwiftGDTests: XCTestCase {
             ("testCreateImageFromPNGBytes", testCreateImageFromPNGBytes),
             ("testTryCreatingImageFromHTMLFile", testTryCreatingImageFromHTMLFile),
             ("testColorFromRGB", testColorFromRGB),
-            ("testMorph", testMorph)
+            ("testMorph", testMorph),
+            ("testWriteToMemory", testWriteToMemory)
         ]
     }
 }
