@@ -157,6 +157,18 @@ public class Image {
         return (data, size)
     }
 
+    public func crop(x: Int, y: Int, width: Int, height: Int) -> Image? {
+        var imagePtr: gdImagePtr? = nil
+        var area: gdRect = gdRect(x: Int32(x), y: Int32(y), width: Int32(width), height: Int32(height))
+        var affine: [Double] = [Double](arrayLiteral: 1,0,0,1,0,0)
+        gdTransformAffineGetImage(&imagePtr, internalImage, &area, &affine)
+        if imagePtr != nil {
+            return Image(gdImage: imagePtr!)
+        } else {
+            return nil
+        }
+    }
+
 	public func resizedTo(width: Int, height: Int, applySmoothing: Bool = true) -> Image? {
 		if applySmoothing {
 			gdImageSetInterpolationMethod(internalImage, GD_BILINEAR_FIXED)

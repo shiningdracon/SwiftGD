@@ -301,6 +301,46 @@ class SwiftGDTests: XCTestCase {
         XCTAssertEqual(data!.count, Int(size))
     }
 
+    func testCrop() throws {
+        let dir = NSTemporaryDirectory()
+        let origUrl = URL(fileURLWithPath: dir + "orig.png")
+        let cropUrl = URL(fileURLWithPath: dir + "crop.png")
+
+        let fm = FileManager()
+
+        if fm.fileExists(atPath: origUrl.path) {
+            try fm.removeItem(at: origUrl)
+        }
+
+        if fm.fileExists(atPath: cropUrl.path) {
+            try fm.removeItem(at: cropUrl)
+        }
+
+        let width = 500
+        let height = 500
+
+        guard let image = Image(width: width, height: height) else {
+            XCTFail("can't create image")
+            return
+        }
+
+        image.fillRectangle(topLeft: Point(x: 0, y: 0), bottomRight: Point(x: 499, y: 499), color: Color(rgb: "000000")!)
+        image.fillRectangle(topLeft: Point(x: 5, y: 5), bottomRight: Point(x: 494, y: 494), color: Color(rgb: "cccccc")!)
+
+        if !image.write(to: origUrl) {
+            XCTFail("can't write orig image")
+        }
+
+        guard let newImage = image.crop(x: 1, y: 100, width: 50, height: 60) else {
+            XCTFail("failed crop image")
+            return
+        }
+
+        if !newImage.write(to: cropUrl) {
+            XCTFail("can't write crop image")
+        }
+    }
+
     static var allTests : [(String, (SwiftGDTests) -> () throws -> Void)] {
         return [
             ("testCreateEmptyImage", testCreateEmptyImage),
@@ -316,7 +356,8 @@ class SwiftGDTests: XCTestCase {
             ("testTryCreatingImageFromHTMLFile", testTryCreatingImageFromHTMLFile),
             ("testColorFromRGB", testColorFromRGB),
             ("testMorph", testMorph),
-            ("testWriteToMemory", testWriteToMemory)
+            ("testWriteToMemory", testWriteToMemory),
+            ("testCrop", testCrop)
         ]
     }
 }
