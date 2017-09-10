@@ -157,6 +157,17 @@ public class Image {
         return (data, size)
     }
 
+    public func writeToGifData() -> (Data?, Int32) {
+
+        var size: Int32 = 0
+        guard let bytesPtr = gdImageGifPtr(internalImage, &size) else {
+            return (nil, -1)
+        }
+        let data = Data(bytes: bytesPtr, count: Int(size))
+
+        return (data, size)
+    }
+
     public func crop(x: Int, y: Int, width: Int, height: Int) -> Image? {
         var imagePtr: gdImagePtr? = nil
         var area: gdRect = gdRect(x: Int32(x), y: Int32(y), width: Int32(width), height: Int32(height))
